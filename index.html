@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ритм работы</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --panel: #ffffff;
+      --button: #EFF6FF;
+      --border: #d9e4f2;
+      --accent: #1976a5;
+      --text: #151b26;
+      --muted: #5a6777;
+      --shadow: 0 2px 10px rgba(31, 63, 99, 0.05);
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      min-height: 100%;
+      background: #ffffff;
+    }
+
+    body {
+      margin: 0;
+      padding: 32px 16px;
+      background: #ffffff;
+      color: var(--text);
+      font-family: Inter, Arial, sans-serif;
+      font-size: 18px;
+      line-height: 1.42;
+    }
+
+    .rhythm {
+      width: min(100%, 980px);
+      margin: 0 auto;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      min-width: 0;
+      padding: 12px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .card--wide { grid-column: 1 / -1; }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      gap: 12px;
+      padding: 11px 12px;
+      border: 1px solid #d6e3f2;
+      border-radius: 8px;
+      background: var(--button);
+      color: var(--text);
+      font: inherit;
+      font-weight: 700;
+      line-height: 1.3;
+      text-align: left;
+      cursor: pointer;
+      transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .toggle[aria-expanded="true"] .status {
+      transform: rotate(180deg);
+    }
+
+    .toggle:hover { background: #e4f0ff; border-color: #c8dced; }
+
+    .toggle:focus-visible {
+      outline: 3px solid rgba(25, 118, 165, 0.35);
+      outline-offset: 3px;
+    }
+
+    .calendar {
+      flex: 0 0 40px;
+      width: 40px;
+      height: 40px;
+    }
+
+    .calendar rect:first-child { fill: #d8efff; }
+    .calendar rect:nth-child(2) { fill: #b7e0f8; }
+    .calendar rect:nth-child(3),
+    .calendar rect:nth-child(4) { fill: #6bc1e7; }
+    .calendar g { fill: #42a1a5; }
+
+    .title { flex: 1; }
+
+    /* SVG-галочка постоянно видна в каждой кнопке. */
+    /* Стрелка раскрытия — компактный chevron вниз, как в референсе. */
+    .status {
+      flex: 0 0 20px;
+      width: 20px;
+      height: 20px;
+      margin-right: 2px;
+      color: #1b2b40;
+      transition: transform 220ms ease;
+    }
+
+    .status path {
+      fill: none;
+      stroke: currentColor;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 2.5;
+    }
+
+    .content {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      transform: translateY(-5px);
+      transition: grid-template-rows 280ms ease, opacity 220ms ease, transform 280ms ease;
+    }
+
+    .content__inner {
+      overflow: hidden;
+      padding: 0 2px;
+    }
+
+    .content__inner p {
+      margin: 16px 0 2px;
+    }
+
+    .content.is-open {
+      grid-template-rows: 1fr;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .extra {
+      display: none;
+      grid-column: 1 / -1;
+    }
+
+    .extra.is-visible {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+      animation: reveal 320ms ease both;
+    }
+
+    /* В итоговых карточках голубые плашки одинаковой длины. */
+    .extra .toggle {
+      width: 350px;
+      max-width: 100%;
+    }
+
+    .extra .title { flex: 0 1 auto; }
+
+    /* Стрелки в итоговых кнопках выровнены по правому краю плашек. */
+    .extra .status { margin-left: auto; }
+
+    @keyframes reveal {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 680px) {
+      body { padding: 20px 12px; }
+      .cards, .extra.is-visible { grid-template-columns: 1fr; gap: 14px; }
+      .calendar { flex-basis: 36px; width: 36px; height: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="rhythm" aria-label="Ритм работы с гипотезами">
+    <section class="cards" aria-label="Каденции">
+      <article class="card" data-primary-card>
+        <button class="toggle" type="button" aria-expanded="false" aria-controls="weekly-content">
+          <svg class="calendar" viewBox="0 0 48 48" aria-hidden="true">
+            <rect x="5" y="8" width="38" height="35" rx="4" fill="#EAF7F7"/>
+            <rect x="5" y="14" width="38" height="9" fill="#D7F0F1"/>
+            <rect x="12" y="4" width="4" height="12" rx="2" fill="#FFFFFF"/>
+            <rect x="32" y="4" width="4" height="12" rx="2" fill="#FFFFFF"/>
+            <g fill="#FFFFFF"><rect x="12" y="28" width="5" height="5" rx="1"/><rect x="22" y="28" width="5" height="5" rx="1"/><rect x="32" y="28" width="5" height="5" rx="1"/><rect x="12" y="36" width="5" height="5" rx="1"/><rect x="22" y="36" width="5" height="5" rx="1"/><rect x="32" y="36" width="5" height="5" rx="1"/></g>
+          </svg>
+          <span class="title">Еженедельно (30 мин):<br>«Сигналы → решения»</span><svg class="status" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 7 10 13 16 7"/></svg>
+        </button>
+        <div class="content" id="weekly-content" role="region" aria-label="Еженедельная встреча"><div class="content__inner"><p>Смотришь 3–5 ранних сигналов по гипотезам<br>и 1–2 самых рискованных предположения.<br><br><strong>По каждой гипотезе фиксируешь решение:</strong> продолжаешь/корректируешь/останавливаешь.<br><br><strong>Итог:</strong> 3 действия до следующей недели.</p></div></div>
+      </article>
+
+      <article class="card" data-primary-card>
+        <button class="toggle" type="button" aria-expanded="false" aria-controls="biweekly-content">
+          <svg class="calendar" viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="8" width="38" height="35" rx="4" fill="#EAF7F7"/><rect x="5" y="14" width="38" height="9" fill="#D7F0F1"/><rect x="12" y="4" width="4" height="12" rx="2" fill="#FFFFFF"/><rect x="32" y="4" width="4" height="12" rx="2" fill="#FFFFFF"/><g fill="#FFFFFF"><rect x="12" y="28" width="5" height="5" rx="1"/><rect x="22" y="28" width="5" height="5" rx="1"/><rect x="32" y="28" width="5" height="5" rx="1"/><rect x="12" y="36" width="5" height="5" rx="1"/><rect x="22" y="36" width="5" height="5" rx="1"/><rect x="32" y="36" width="5" height="5" rx="1"/></g></svg>
+          <span class="title">Раз в 2 недели (45–60 мин):<br>«План на 1–2 недели»</span><svg class="status" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 7 10 13 16 7"/></svg>
+        </button>
+        <div class="content" id="biweekly-content" role="region" aria-label="Встреча раз в две недели"><div class="content__inner"><p>Разбираешь, что подтвердилось и где стопор.<br><br><strong>Обновляешь план ближайших шагов</strong><br>(или фиксируешь: «курс без изменений»).<br><br>Здесь же заранее держишь буфер 10–20% времени команды под внеплан и развороты.</p></div></div>
+      </article>
+
+      <article class="card" data-primary-card>
+        <button class="toggle" type="button" aria-expanded="false" aria-controls="monthly-content">
+          <svg class="calendar" viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="8" width="38" height="35" rx="4" fill="#EAF7F7"/><rect x="5" y="14" width="38" height="9" fill="#D7F0F1"/><rect x="12" y="4" width="4" height="12" rx="2" fill="#FFFFFF"/><rect x="32" y="4" width="4" height="12" rx="2" fill="#FFFFFF"/><g fill="#FFFFFF"><rect x="12" y="28" width="5" height="5" rx="1"/><rect x="22" y="28" width="5" height="5" rx="1"/><rect x="32" y="28" width="5" height="5" rx="1"/><rect x="12" y="36" width="5" height="5" rx="1"/><rect x="22" y="36" width="5" height="5" rx="1"/><rect x="32" y="36" width="5" height="5" rx="1"/></g></svg>
+          <span class="title">Ежемесячно (60–90 мин):<br>«Процесс»</span><svg class="status" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 7 10 13 16 7"/></svg>
+        </button>
+        <div class="content" id="monthly-content" role="region" aria-label="Ежемесячная встреча"><div class="content__inner"><p>Смотришь, где чаще ломается путь<br>и что накапливается в рисках/предположениях.<br><br><strong>Итог:</strong> 2–3 улучшения процесса + обновление реестров.</p></div></div>
+      </article>
+
+      <article class="card" data-primary-card>
+        <button class="toggle" type="button" aria-expanded="false" aria-controls="quarterly-content">
+          <svg class="calendar" viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="8" width="38" height="35" rx="4" fill="#EAF7F7"/><rect x="5" y="14" width="38" height="9" fill="#D7F0F1"/><rect x="12" y="4" width="4" height="12" rx="2" fill="#FFFFFF"/><rect x="32" y="4" width="4" height="12" rx="2" fill="#FFFFFF"/><g fill="#FFFFFF"><rect x="12" y="28" width="5" height="5" rx="1"/><rect x="22" y="28" width="5" height="5" rx="1"/><rect x="32" y="28" width="5" height="5" rx="1"/><rect x="12" y="36" width="5" height="5" rx="1"/><rect x="22" y="36" width="5" height="5" rx="1"/><rect x="32" y="36" width="5" height="5" rx="1"/></g></svg>
+          <span class="title">Ежеквартально (2–3 ч):<br>«Курс на квартал»</span><svg class="status" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 7 10 13 16 7"/></svg>
+        </button>
+        <div class="content" id="quarterly-content" role="region" aria-label="Ежеквартальная встреча"><div class="content__inner"><p>Подводишь итоги, обновляешь портфель гипотез и панель стратегии на 1 странице для стейкхолдеров.</p></div></div>
+      </article>
+
+      <section class="extra" id="extra-cards" aria-label="Проверка ритма" aria-hidden="true">
+        <article class="card card--wide">
+          <button class="toggle" type="button" aria-expanded="false" aria-controls="check-content"><span class="title">Проверка, что ритм работает</span><svg class="status" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 7 10 13 16 7"/></svg></button>
+          <div class="content" id="check-content" role="region" aria-label="Проверка ритма"><div class="content__inner"><p>Решения выполняются, страница в базе знаний жива, встреча не превращается в отчётность.</p></div></div>
+        </article>
+        <article class="card card--wide">
+          <button class="toggle" type="button" aria-expanded="false" aria-controls="change-content"><span class="title">Сигналы, что пора менять</span><svg class="status" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 7 10 13 16 7"/></svg></button>
+          <div class="content" id="change-content" role="region" aria-label="Сигналы для изменения ритма"><div class="content__inner"><p>Решений нет, между встречами «теряется картина», база знаний не обновлялась &gt; 2 недель,<br>каденции регулярно пропускаются.</p></div></div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const primaryCards = [...document.querySelectorAll('[data-primary-card]')];
+      const extraCards = document.getElementById('extra-cards');
+      const visited = new Set();
+
+      function toggleCard(button) {
+        const panel = document.getElementById(button.getAttribute('aria-controls'));
+        const isOpen = button.getAttribute('aria-expanded') === 'true';
+        button.setAttribute('aria-expanded', String(!isOpen));
+        panel.classList.toggle('is-open', !isOpen);
+      }
+
+      document.querySelectorAll('.toggle').forEach((button) => {
+        button.addEventListener('click', () => {
+          toggleCard(button);
+          const card = button.closest('[data-primary-card]');
+          if (!card) return;
+
+          card.classList.add('is-visited');
+          visited.add(card);
+          if (visited.size === primaryCards.length) {
+            extraCards.classList.add('is-visible');
+            extraCards.setAttribute('aria-hidden', 'false');
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
